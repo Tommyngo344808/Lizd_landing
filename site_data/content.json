@@ -1,0 +1,15 @@
+{
+  "hero": {
+    "title": "NaMat LIZD - Giải pháp mát lạnh cho mùa hè",
+    "subtitle": "Chăn lạnh Premium, Cool Fiber, gối trẻ em… giảm đến 40%",
+    "cta_text": "Xem sản phẩm",
+    "cta_link": "#products"
+  },
+  "footer": {
+    "text": "NaMat LIZD. All rights reserved."
+  },
+  "products": [
+    { "name": "Chăn lạnh Premium", "description": "Mát thoáng, nhẹ, dễ giặt." },
+    { "name": "Bộ Cool Fiber", "description": "Êm mướt, thoáng khí, kháng khuẩn." }
+  ]
+}
