@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NaMat LIZD</title>
 
-  <!-- Base reset & fonts (nhẹ) -->
   <style>
     :root{--brand:#7856EA;--text:#1F2937;--muted:#6B7280;--bg:#F8FAFC}
     *{box-sizing:border-box}html,body{margin:0;padding:0}
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#fff;color:var(--text)}
     .nm-container{max-width:1200px;margin:0 auto;padding:0 16px}
+
     /* HERO */
     .nm-hero{position:relative;border-radius:24px;overflow:hidden;margin:20px auto;background:linear-gradient(180deg,rgba(120,86,234,.12),rgba(120,86,234,0))}
     .nm-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
@@ -23,6 +23,19 @@
     .nm-btn{border:0;border-radius:14px;padding:12px 18px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
     .nm-btn-primary{background:#7856EA;color:#fff}
     .nm-btn-ghost{background:#fff;color:#7856EA;border:1px solid rgba(120,86,234,.25)}
+
+    /* PRODUCTS */
+    .products-header{margin:28px 0 12px;font-weight:800;font-size:22px}
+    .products-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .product-card{grid-column:span 12;background:#fff;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+    .product-thumb{width:100%;aspect-ratio:4/3;object-fit:cover;background:#F3F4F6}
+    .product-body{padding:12px}
+    .product-title{font-weight:700;margin:4px 0 6px;font-size:15px}
+    .product-price{color:#0A7C2E;font-weight:800}
+    .product-link{color:#1163FF;text-decoration:none;font-weight:600}
+    @media(min-width:640px){.product-card{grid-column:span 6}}
+    @media(min-width:960px){.product-card{grid-column:span 4}}
+
     /* FOOTER */
     .nm-footer{background:var(--bg);border-top:1px solid #E5E7EB;margin-top:48px}
     .nm-footer-grid{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:24px;padding:32px 0}
@@ -33,49 +46,54 @@
     .nm-copy{border-top:1px solid #E5E7EB;padding:14px 0;color:#6B7280;font-size:13px}
     @media(max-width:900px){.nm-footer-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:640px){.nm-footer-grid{grid-template-columns:1fr}.nm-hero-inner{padding:44px 16px}}
+
     /* ADMIN BUTTON */
     #nm-admin-btn{position:fixed;right:18px;bottom:18px;background:#111827;color:#fff;border-radius:10px;padding:10px 14px;font-size:13px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:.85;z-index:9999}
     #nm-admin-btn:hover{opacity:1;background:#7856EA}
   </style>
+
+  <!-- Nếu bạn có script cũ render sản phẩm, bật dòng sau (đúng đường dẫn của bạn) -->
+  <!-- <script src="/assets/app.js" defer></script> -->
 </head>
 <body>
 
-  <!-- MOUNT HERO (sẽ được JS render) -->
+  <!-- HERO -->
   <div class="nm-container" id="nm-hero-mount"></div>
 
-  <!-- NỘI DUNG HIỆN CÓ (nếu bạn có phần grid sản phẩm, có thể đặt vào đây) -->
-  <main class="nm-container" id="page-content">
-    <!-- Ví dụ: tiêu đề list sản phẩm -->
-    <h2 style="margin:24px 0 12px">SẢN PHẨM THÁNG 8</h2>
-    <!-- Nếu bạn đã có script dựng grid, nó có thể gắn vào trong #page-content -->
-  </main>
+  <!-- PRODUCTS SECTION -->
+  <section class="nm-container" id="products-section">
+    <h2 class="products-header">SẢN PHẨM THÁNG 8</h2>
+    <!-- Nếu script cũ của bạn render vào id khác, giữ nguyên id cũ; 
+         còn không, fallback sẽ render vào #products-grid -->
+    <div id="products-grid" class="products-grid" aria-live="polite"></div>
+  </section>
 
-  <!-- FOOTER (sẽ được JS render) -->
+  <!-- FOOTER -->
   <div id="nm-footer-mount"></div>
 
   <!-- NÚT ADMIN -->
   <a id="nm-admin-btn" href="/admin" title="Mở bảng điều khiển">⚙ Admin</a>
 
-  <!-- INJECT HERO + FOOTER + LOAD JSON -->
+  <!-- INJECT HERO + FOOTER + LOAD JSON + PRODUCTS FALLBACK -->
   <script>
   (function(){
-    // HERO
+    // ===== HERO =====
     const heroMount = document.getElementById('nm-hero-mount');
     heroMount.innerHTML = `
       <section class="nm-hero" aria-label="Hero">
         <div class="nm-hero-bg" id="heroBg"></div>
         <div class="nm-hero-inner">
           <span class="nm-hero-kicker" id="heroKicker">SẢN PHẨM THÁNG 8</span>
-          <h1 id="heroTitle">Chân ái giấc ngủ cho cả nhà • Giảm đến 40%</h1>
-          <p id="heroDesc">Chăn lạnh Premium, Cool Fiber set, gối trẻ em cao cấp… Hàng chính hãng NaMat – an toàn, bền đẹp, êm ái.</p>
+          <h1 id="heroTitle">NaMat LIZD - Giải pháp mát lạnh cho mùa hè</h1>
+          <p id="heroDesc">Chăn lạnh Premium, Cool Fiber, gối trẻ em… giảm đến 40%</p>
           <div class="nm-hero-cta">
-            <a class="nm-btn nm-btn-primary" id="cta1" href="#products">Xem sản phẩm</a>
+            <a class="nm-btn nm-btn-primary" id="cta1" href="#products-section">Xem sản phẩm</a>
             <a class="nm-btn nm-btn-ghost" id="cta2" href="/chinh-sach">Xem chính sách</a>
           </div>
         </div>
       </section>`;
 
-    // FOOTER
+    // ===== FOOTER =====
     const footerMount = document.getElementById('nm-footer-mount');
     const footer = document.createElement('footer');
     footer.className = 'nm-footer';
@@ -89,13 +107,12 @@
           <div class="nm-ft-title">Chính sách</div>
           <div class="nm-ft-links">
             <a href="/chinh-sach/doi-tra">Đổi trả 7 ngày</a>
-            <a href="/chinh-sach/bao-hanh">Bảo hành 12 tháng</a>
             <a href="/chinh-sach/van-chuyen">Vận chuyển</a>
           </div>
         </div>
         <div>
           <div class="nm-ft-title">Liên hệ</div>
-          <p class="nm-ft-text">Hotline: 09x xxx xxxx<br>Email: support@namat.vn</p>
+          <p class="nm-ft-text">Hotline: 0949 090 033<br>Email: sales@lizd.vn</p>
         </div>
         <div>
           <div class="nm-ft-title">Nhận ưu đãi</div>
@@ -111,50 +128,71 @@
     footerMount.appendChild(footer);
     document.getElementById('nm-year').textContent = new Date().getFullYear();
 
-    // LOAD HERO DATA từ nhiều path để tương thích
-    const tryPaths = ['data/hero.json','/data/hero.json','site_data/content.json','/site_data/content.json'];
+    // ===== LOAD HERO JSON (nếu có) =====
+    const setIf = (v, fn) => { if (v !== undefined && v !== null && v !== '') fn(v); };
+    const tryHero = ['data/hero.json','/data/hero.json','site_data/content.json','/site_data/content.json'];
     (async () => {
-      for (const p of tryPaths) {
+      for (const p of tryHero) {
         try {
           const res = await fetch(p, { cache: 'no-store' });
           if (!res.ok) continue;
           const cfg = await res.json();
-
+          const source = cfg.hero ? cfg.hero : cfg;
           const $ = id => document.getElementById(id);
-          // Chuẩn hóa key cho 2 dạng file (hero.json & content.json)
-          const hero = cfg.hero ? {
-            kicker: cfg.hero.kicker || cfg.kicker,
-            title : cfg.hero.title  || cfg.title,
-            desc  : cfg.hero.subtitle || cfg.hero.desc || cfg.desc,
-            bg    : cfg.hero.background || cfg.hero.bg || cfg.bg,
-            cta1  : { text: cfg.hero.ctaText || cfg?.cta1?.text, href: cfg.hero.ctaLink || cfg?.cta1?.href },
-            cta2  : cfg.hero.cta2 || cfg.cta2
-          } : {
-            kicker: cfg.kicker,
-            title : cfg.title,
-            desc  : cfg.desc,
-            bg    : cfg.bg,
-            cta1  : cfg.cta1,
-            cta2  : cfg.cta2
-          };
-
-          if (hero.bg)    $('heroBg').style.backgroundImage = `url('${hero.bg}')`;
-          if (hero.kicker) $('heroKicker').textContent = hero.kicker;
-          if (hero.title)  $('heroTitle').textContent  = hero.title;
-          if (hero.desc)   $('heroDesc').textContent   = hero.desc;
-          if (hero.cta1){
-            if (hero.cta1.text) $('cta1').textContent = hero.cta1.text;
-            if (hero.cta1.href) $('cta1').href        = hero.cta1.href;
-          }
-          if (hero.cta2){
-            const c2 = document.getElementById('cta2');
-            if (hero.cta2.text) c2.textContent = hero.cta2.text;
-            if (hero.cta2.href) c2.href        = hero.cta2.href;
-          }
-          break; // đã load được thì dừng
-        } catch(e) { /* thử path khác */ }
+          setIf(source.background || source.bg, v => { $('heroBg').style.backgroundImage = `url('${v}')`; });
+          setIf(source.kicker || cfg.kicker, v => { $('heroKicker').textContent = v; });
+          setIf(source.title  || cfg.title , v => { $('heroTitle').textContent  = v; });
+          setIf(source.subtitle || source.desc || cfg.desc, v => { $('heroDesc').textContent = v; });
+          const cta1Text = source.ctaText || source?.cta1?.text || cfg?.cta1?.text;
+          const cta1Href = source.ctaLink || source?.cta1?.href || cfg?.cta1?.href;
+          const cta2Text = source?.cta2?.text || cfg?.cta2?.text;
+          const cta2Href = source?.cta2?.href || cfg?.cta2?.href;
+          setIf(cta1Text, v => { $('cta1').textContent = v; });
+          setIf(cta1Href, v => { $('cta1').href        = v; });
+          setIf(cta2Text, v => { $('cta2').textContent = v; });
+          setIf(cta2Href, v => { $('cta2').href        = v; });
+          break;
+        } catch(e) {}
       }
     })();
+
+    // ===== PRODUCTS FALLBACK =====
+    // Nếu site của bạn đã có script cũ render sản phẩm, nó sẽ vẽ đè lên #products-grid.
+    // Nếu KHÔNG có, fallback dưới đây sẽ cố gắng lấy data và dựng grid tối thiểu.
+    const grid = document.getElementById('products-grid');
+    function hasRenderedProducts() {
+      // nếu trong 1s sau khi load mà đã có thẻ con (script cũ vẽ), thì thôi không fallback
+      return grid.children.length > 0;
+    }
+
+    function renderFallbackProducts(items=[]) {
+      if (!items || !items.length) return;
+      grid.innerHTML = items.map(p => `
+        <article class="product-card">
+          ${p.image ? `<img class="product-thumb" src="${p.image}" alt="${p.name||''}">` : `<div class="product-thumb"></div>`}
+          <div class="product-body">
+            <div class="product-title">${p.name || 'Sản phẩm'}</div>
+            ${p.price ? `<div class="product-price">${p.price}</div>` : ''}
+            ${p.link ? `<a class="product-link" href="${p.link}">Xem chi tiết</a>` : ''}
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // thử lấy dữ liệu từ nhiều path phổ biến
+    const tryProducts = ['data/products.json','/data/products.json','site_data/products.json','/site_data/products.json'];
+    setTimeout(async () => {
+      if (hasRenderedProducts()) return; // script cũ đã vẽ
+      for (const p of tryProducts) {
+        try {
+          const r = await fetch(p, { cache:'no-store' });
+          if (!r.ok) continue;
+          const data = await r.json();
+          const items = Array.isArray(data) ? data : (data.products || []);
+          if (items.length) { renderFallbackProducts(items); break; }
+        } catch(e) {}
+      }
+    }, 1000);
   })();
   </script>
 </body>
