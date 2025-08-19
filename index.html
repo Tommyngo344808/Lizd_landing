@@ -6,194 +6,239 @@
   <title>NaMat LIZD</title>
 
   <style>
-    :root{--brand:#7856EA;--text:#1F2937;--muted:#6B7280;--bg:#F8FAFC}
+    :root{
+      --brand:#7856EA;--text:#1F2937;--muted:#6B7280;--bg:#F8FAFC;--card:#FFFFFF;
+      --border:#E5E7EB;--green:#0A7C2E;--blue:#2563EB
+    }
     *{box-sizing:border-box}html,body{margin:0;padding:0}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#fff;color:var(--text)}
-    .nm-container{max-width:1200px;margin:0 auto;padding:0 16px}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:#fff}
 
-    /* HERO */
-    .nm-hero{position:relative;border-radius:24px;overflow:hidden;margin:20px auto;background:linear-gradient(180deg,rgba(120,86,234,.12),rgba(120,86,234,0))}
-    .nm-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
-    .nm-hero::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.38)}
-    .nm-hero-inner{position:relative;z-index:1;padding:56px 20px;color:#0B1020}
-    .nm-hero-kicker{display:inline-block;background:#fff;color:#7856EA;border:1px solid rgba(0,0,0,.06);border-radius:999px;padding:8px 12px;font-weight:600;font-size:12px;letter-spacing:.04em}
-    .nm-hero h1{font-size:clamp(28px,4vw,44px);line-height:1.15;margin:14px 0 10px}
-    .nm-hero p{max-width:720px;color:var(--text);font-size:clamp(14px,2.2vw,18px)}
-    .nm-hero-cta{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
-    .nm-btn{border:0;border-radius:14px;padding:12px 18px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
-    .nm-btn-primary{background:#7856EA;color:#fff}
-    .nm-btn-ghost{background:#fff;color:#7856EA;border:1px solid rgba(120,86,234,.25)}
+    .container{max-width:1200px;margin:0 auto;padding:0 16px}
 
-    /* PRODUCTS */
-    .products-header{margin:28px 0 12px;font-weight:800;font-size:22px}
-    .products-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
-    .product-card{grid-column:span 12;background:#fff;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-    .product-thumb{width:100%;aspect-ratio:4/3;object-fit:cover;background:#F3F4F6}
-    .product-body{padding:12px}
-    .product-title{font-weight:700;margin:4px 0 6px;font-size:15px}
-    .product-price{color:#0A7C2E;font-weight:800}
-    .product-link{color:#1163FF;text-decoration:none;font-weight:600}
-    @media(min-width:640px){.product-card{grid-column:span 6}}
-    @media(min-width:960px){.product-card{grid-column:span 4}}
+    /* ---------- HERO ---------- */
+    .hero-wrap{margin:22px auto}
+    .hero{
+      position:relative;border-radius:24px;overflow:hidden;
+      background:linear-gradient(180deg,rgba(120,86,234,.12),rgba(120,86,234,0))
+    }
+    .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+    .hero::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.38)}
+    .hero-inner{position:relative;z-index:1;padding:56px 20px}
+    .kicker{display:inline-block;background:#fff;color:var(--brand);border:1px solid rgba(0,0,0,.06);
+      border-radius:999px;padding:8px 12px;font-weight:700;font-size:12px;letter-spacing:.04em}
+    .hero h1{font-size:clamp(28px,4vw,44px);line-height:1.15;margin:14px 0 10px}
+    .hero p{max-width:760px;color:var(--text);font-size:clamp(14px,2.2vw,18px)}
+    .cta{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn{border:0;border-radius:14px;padding:12px 18px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .btn-primary{background:var(--brand);color:#fff}
+    .btn-ghost{background:#fff;color:var(--brand);border:1px solid rgba(120,86,234,.25)}
 
-    /* FOOTER */
-    .nm-footer{background:var(--bg);border-top:1px solid #E5E7EB;margin-top:48px}
-    .nm-footer-grid{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:24px;padding:32px 0}
-    .nm-ft-title{font-weight:700;margin-bottom:10px;color:#111827}
-    .nm-ft-text{color:var(--muted);font-size:14px;line-height:1.6}
-    .nm-ft-links a{display:block;color:var(--text);text-decoration:none;font-size:14px;margin:8px 0}
-    .nm-ft-links a:hover{color:#7856EA}
-    .nm-copy{border-top:1px solid #E5E7EB;padding:14px 0;color:#6B7280;font-size:13px}
-    @media(max-width:900px){.nm-footer-grid{grid-template-columns:1fr 1fr}}
-    @media(max-width:640px){.nm-footer-grid{grid-template-columns:1fr}.nm-hero-inner{padding:44px 16px}}
+    /* ---------- PRODUCTS ---------- */
+    .section-title{margin:28px 0 12px;font-weight:900;font-size:22px}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .card{grid-column:span 12;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+    .thumb{width:100%;aspect-ratio:4/3;object-fit:cover;background:#F3F4F6;cursor:pointer}
+    .body{padding:12px}
+    .title{font-weight:800;margin:4px 0 6px;font-size:15px;cursor:pointer}
+    .price{color:var(--green);font-weight:800}
+    .plink{color:var(--blue);text-decoration:none;font-weight:700}
+    @media(min-width:640px){.card{grid-column:span 6}}
+    @media(min-width:960px){.card{grid-column:span 4}}
 
-    /* ADMIN BUTTON */
-    #nm-admin-btn{position:fixed;right:18px;bottom:18px;background:#111827;color:#fff;border-radius:10px;padding:10px 14px;font-size:13px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:.85;z-index:9999}
-    #nm-admin-btn:hover{opacity:1;background:#7856EA}
+    /* ---------- MODAL ---------- */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+    .modal.show{display:flex}
+    .modal-card{max-width:900px;width:100%;background:#fff;border-radius:16px;overflow:hidden;display:grid;grid-template-columns:1fr;gap:0}
+    .modal-img{width:100%;max-height:60vh;object-fit:cover;background:#F3F4F6}
+    .modal-body{padding:16px}
+    .modal-title{font-weight:900;font-size:20px;margin:0 0 8px}
+    .modal-desc{color:var(--muted);line-height:1.6;margin:0 0 10px}
+    .modal-price{font-weight:900;color:var(--green)}
+    .modal-actions{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+    .close{position:absolute;top:10px;right:12px;background:#111827;color:#fff;border:0;border-radius:10px;padding:8px 10px;cursor:pointer}
+    @media(min-width:900px){
+      .modal-card{grid-template-columns:1fr 1fr}
+      .modal-img{height:100%;max-height:none}
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer{background:var(--bg);border-top:1px solid var(--border);margin-top:44px}
+    .ft{padding:22px 0}
+    .ft-title{font-weight:900;margin-bottom:8px}
+    .ft-text{color:var(--text);line-height:1.7}
+    .copy{border-top:1px solid var(--border);padding:12px 0;color:#6B7280;font-size:13px}
+
+    /* ---------- ADMIN BTN ---------- */
+    #admin-btn{position:fixed;right:18px;bottom:18px;background:#111827;color:#fff;border-radius:10px;padding:10px 14px;font-size:13px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:.85;z-index:99}
+    #admin-btn:hover{opacity:1;background:var(--brand)}
   </style>
-
-  <!-- Nếu bạn có script cũ render sản phẩm, bật dòng sau (đúng đường dẫn của bạn) -->
-  <!-- <script src="/assets/app.js" defer></script> -->
 </head>
 <body>
 
   <!-- HERO -->
-  <div class="nm-container" id="nm-hero-mount"></div>
-
-  <!-- PRODUCTS SECTION -->
-  <section class="nm-container" id="products-section">
-    <h2 class="products-header">SẢN PHẨM THÁNG 8</h2>
-    <!-- Nếu script cũ của bạn render vào id khác, giữ nguyên id cũ; 
-         còn không, fallback sẽ render vào #products-grid -->
-    <div id="products-grid" class="products-grid" aria-live="polite"></div>
-  </section>
-
-  <!-- FOOTER -->
-  <div id="nm-footer-mount"></div>
-
-  <!-- NÚT ADMIN -->
-  <a id="nm-admin-btn" href="/admin" title="Mở bảng điều khiển">⚙ Admin</a>
-
-  <!-- INJECT HERO + FOOTER + LOAD JSON + PRODUCTS FALLBACK -->
-  <script>
-  (function(){
-    // ===== HERO =====
-    const heroMount = document.getElementById('nm-hero-mount');
-    heroMount.innerHTML = `
-      <section class="nm-hero" aria-label="Hero">
-        <div class="nm-hero-bg" id="heroBg"></div>
-        <div class="nm-hero-inner">
-          <span class="nm-hero-kicker" id="heroKicker">SẢN PHẨM THÁNG 8</span>
-          <h1 id="heroTitle">NaMat LIZD - Giải pháp mát lạnh cho mùa hè</h1>
-          <p id="heroDesc">Chăn lạnh Premium, Cool Fiber, gối trẻ em… giảm đến 40%</p>
-          <div class="nm-hero-cta">
-            <a class="nm-btn nm-btn-primary" id="cta1" href="#products-section">Xem sản phẩm</a>
-            <a class="nm-btn nm-btn-ghost" id="cta2" href="/chinh-sach">Xem chính sách</a>
-          </div>
-        </div>
-      </section>`;
-
-    // ===== FOOTER =====
-    const footerMount = document.getElementById('nm-footer-mount');
-    const footer = document.createElement('footer');
-    footer.className = 'nm-footer';
-    footer.innerHTML = `
-      <div class="nm-container nm-footer-grid">
-        <div>
-          <div class="nm-ft-title">NaMat LIZD</div>
-          <p class="nm-ft-text">Thương hiệu chăn ga gối nệm chính hãng – êm ái, thoáng mát, bền đẹp.</p>
-        </div>
-        <div>
-          <div class="nm-ft-title">Chính sách</div>
-          <div class="nm-ft-links">
-            <a href="/chinh-sach/doi-tra">Đổi trả 7 ngày</a>
-            <a href="/chinh-sach/van-chuyen">Vận chuyển</a>
-          </div>
-        </div>
-        <div>
-          <div class="nm-ft-title">Liên hệ</div>
-          <p class="nm-ft-text">Hotline: 0949 090 033<br>Email: sales@lizd.vn</p>
-        </div>
-        <div>
-          <div class="nm-ft-title">Nhận ưu đãi</div>
-          <form name="newsletter" method="POST" data-netlify="true">
-            <input type="hidden" name="form-name" value="newsletter">
-            <input name="email" type="email" placeholder="Nhập email của bạn" required
-                   style="border:1px solid #E5E7EB;border-radius:12px;padding:10px 12px;margin-right:8px">
-            <button type="submit" class="nm-btn nm-btn-primary" style="border-radius:12px">Đăng ký</button>
-          </form>
+  <div class="container hero-wrap">
+    <section class="hero">
+      <div class="hero-bg" id="heroBg"></div>
+      <div class="hero-inner">
+        <span class="kicker" id="heroKicker">SẢN PHẨM THÁNG 8</span>
+        <h1 id="heroTitle">NaMat LIZD - Giải pháp mát lạnh cho mùa hè</h1>
+        <p id="heroDesc">Chăn lạnh Premium, Cool Fiber, gối trẻ em… giảm đến 40%</p>
+        <div class="cta">
+          <a class="btn btn-primary" id="cta1" href="#products">Xem sản phẩm</a>
+          <a class="btn btn-ghost" id="cta2" href="/chinh-sach">Xem chính sách</a>
         </div>
       </div>
-      <div class="nm-container nm-copy">© <span id="nm-year"></span> NaMat. All rights reserved.</div>`;
-    footerMount.appendChild(footer);
-    document.getElementById('nm-year').textContent = new Date().getFullYear();
+    </section>
+  </div>
 
-    // ===== LOAD HERO JSON (nếu có) =====
-    const setIf = (v, fn) => { if (v !== undefined && v !== null && v !== '') fn(v); };
-    const tryHero = ['data/hero.json','/data/hero.json','site_data/content.json','/site_data/content.json'];
-    (async () => {
-      for (const p of tryHero) {
-        try {
-          const res = await fetch(p, { cache: 'no-store' });
-          if (!res.ok) continue;
-          const cfg = await res.json();
-          const source = cfg.hero ? cfg.hero : cfg;
-          const $ = id => document.getElementById(id);
-          setIf(source.background || source.bg, v => { $('heroBg').style.backgroundImage = `url('${v}')`; });
-          setIf(source.kicker || cfg.kicker, v => { $('heroKicker').textContent = v; });
-          setIf(source.title  || cfg.title , v => { $('heroTitle').textContent  = v; });
-          setIf(source.subtitle || source.desc || cfg.desc, v => { $('heroDesc').textContent = v; });
-          const cta1Text = source.ctaText || source?.cta1?.text || cfg?.cta1?.text;
-          const cta1Href = source.ctaLink || source?.cta1?.href || cfg?.cta1?.href;
-          const cta2Text = source?.cta2?.text || cfg?.cta2?.text;
-          const cta2Href = source?.cta2?.href || cfg?.cta2?.href;
-          setIf(cta1Text, v => { $('cta1').textContent = v; });
-          setIf(cta1Href, v => { $('cta1').href        = v; });
-          setIf(cta2Text, v => { $('cta2').textContent = v; });
-          setIf(cta2Href, v => { $('cta2').href        = v; });
-          break;
-        } catch(e) {}
-      }
-    })();
+  <!-- PRODUCTS -->
+  <section class="container" id="products">
+    <h2 class="section-title">SẢN PHẨM THÁNG 8</h2>
+    <div id="products-grid" class="grid" aria-live="polite"></div>
+  </section>
 
-    // ===== PRODUCTS FALLBACK =====
-    // Nếu site của bạn đã có script cũ render sản phẩm, nó sẽ vẽ đè lên #products-grid.
-    // Nếu KHÔNG có, fallback dưới đây sẽ cố gắng lấy data và dựng grid tối thiểu.
-    const grid = document.getElementById('products-grid');
-    function hasRenderedProducts() {
-      // nếu trong 1s sau khi load mà đã có thẻ con (script cũ vẽ), thì thôi không fallback
-      return grid.children.length > 0;
+  <!-- MODAL (chi tiết sản phẩm) -->
+  <div id="product-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <button class="close" id="modal-close" aria-label="Đóng">✕</button>
+      <img id="modal-img" class="modal-img" alt="">
+      <div class="modal-body">
+        <h3 id="modal-title" class="modal-title"></h3>
+        <p id="modal-desc" class="modal-desc"></p>
+        <div id="modal-price" class="modal-price"></div>
+        <div class="modal-actions">
+          <a id="modal-link" class="btn btn-primary" href="#" target="_blank" rel="noopener">Xem chi tiết</a>
+          <a class="btn btn-ghost" href="#products">Tiếp tục xem</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container ft">
+      <div class="ft-title">Liên hệ</div>
+      <div class="ft-text">
+        ☎ <strong>Liên hệ:</strong> 0949 090 033 / 0912 274 788 / 0969 724 994 / 0962 004 680<br>
+        💬 <strong>Zalo:</strong> 0949 090 033<br>
+        🏬 <strong>Hệ thống gian hàng:</strong> <a href="https://bit.ly/HeThongLIZD-NaMat" target="_blank" rel="noopener">https://bit.ly/HeThongLIZD-NaMat</a><br>
+        🛒 <strong>Shopee:</strong> <a href="https://shopee.vn/lizdnamat" target="_blank" rel="noopener">https://shopee.vn/lizdnamat</a>
+      </div>
+    </div>
+    <div class="container copy">© <span id="year"></span> NaMat LIZD. All rights reserved.</div>
+  </footer>
+
+  <!-- NÚT ADMIN -->
+  <a id="admin-btn" href="/admin" title="Mở bảng điều khiển">⚙ Admin</a>
+
+  <script>
+  // ===== Utils =====
+  const setIf = (v, fn) => { if (v !== undefined && v !== null && v !== '') fn(v); };
+  const $ = (id) => document.getElementById(id);
+
+  // ===== Hero loader (Netlify CMS) =====
+  (async function loadHero(){
+    const paths = ['site_data/content.json','/site_data/content.json','data/hero.json','/data/hero.json'];
+    for (const p of paths){
+      try{
+        const res = await fetch(p, {cache:'no-store'});
+        if(!res.ok) continue;
+        const cfg = await res.json();
+        const hero = cfg.hero ? cfg.hero : cfg; // chấp nhận cả 2 cấu trúc
+        setIf(hero.background || hero.bg, v => $('heroBg').style.backgroundImage = `url('${v}')`);
+        setIf(hero.kicker || cfg.kicker, v => $('heroKicker').textContent = v);
+        setIf(hero.title  || cfg.title , v => $('heroTitle').textContent  = v);
+        setIf(hero.subtitle || hero.desc || cfg.desc, v => $('heroDesc').textContent = v);
+        const cta1Text = hero.ctaText || hero?.cta1?.text || cfg?.cta1?.text;
+        const cta1Href = hero.ctaLink || hero?.cta1?.href || cfg?.cta1?.href;
+        const cta2Text = hero?.cta2?.text || cfg?.cta2?.text;
+        const cta2Href = hero?.cta2?.href || cfg?.cta2?.href;
+        setIf(cta1Text, v => $('cta1').textContent = v);
+        setIf(cta1Href, v => $('cta1').href = v);
+        setIf(cta2Text, v => $('cta2').textContent = v);
+        setIf(cta2Href, v => $('cta2').href = v);
+        break;
+      }catch(e){}
+    }
+  })();
+
+  // ===== Products loader + modal =====
+  (function products(){
+    const grid = $('products-grid');
+    const modal = $('product-modal');
+    const closeBtn = $('modal-close');
+    const mImg = $('modal-img'), mTitle = $('modal-title'), mDesc = $('modal-desc'), mPrice = $('modal-price'), mLink = $('modal-link');
+
+    const productPaths = ['/products.json','/products','/site_data/products.json','/data/products.json'];
+
+    function normalizeItem(p){
+      const name = p.name || p.title || 'Sản phẩm';
+      const desc = p.description || p.desc || '';
+      const price = p.price || p.price_range || p.priceText || '';
+      const link = p.link || p.url || '#';
+      const image =
+        p.image || p.image_url || p.imageUrl ||
+        (Array.isArray(p.images) ? p.images[0] : '') ||
+        p.thumbnail || '';
+      const images = Array.isArray(p.images) ? p.images : (image ? [image] : []);
+      return {name,desc,price,link,image,images};
     }
 
-    function renderFallbackProducts(items=[]) {
-      if (!items || !items.length) return;
-      grid.innerHTML = items.map(p => `
-        <article class="product-card">
-          ${p.image ? `<img class="product-thumb" src="${p.image}" alt="${p.name||''}">` : `<div class="product-thumb"></div>`}
-          <div class="product-body">
-            <div class="product-title">${p.name || 'Sản phẩm'}</div>
-            ${p.price ? `<div class="product-price">${p.price}</div>` : ''}
-            ${p.link ? `<a class="product-link" href="${p.link}">Xem chi tiết</a>` : ''}
+    function cardHTML(p){
+      return `
+        <article class="card">
+          ${p.image ? `<img class="thumb" src="${p.image}" alt="${p.name}" data-click="open">` : `<div class="thumb" data-click="open"></div>`}
+          <div class="body">
+            <div class="title" data-click="open">${p.name}</div>
+            ${p.desc ? `<div class="desc" style="color:var(--muted);margin-bottom:6px">${p.desc}</div>` : ``}
+            ${p.price ? `<div class="price">${p.price}</div>` : ``}
+            <div style="margin-top:8px"><a class="plink" href="${p.link}" target="_blank" rel="noopener">Xem chi tiết</a></div>
           </div>
         </article>
-      `).join('');
+      `;
     }
 
-    // thử lấy dữ liệu từ nhiều path phổ biến
-    const tryProducts = ['data/products.json','/data/products.json','site_data/products.json','/site_data/products.json'];
-    setTimeout(async () => {
-      if (hasRenderedProducts()) return; // script cũ đã vẽ
-      for (const p of tryProducts) {
-        try {
-          const r = await fetch(p, { cache:'no-store' });
-          if (!r.ok) continue;
-          const data = await r.json();
-          const items = Array.isArray(data) ? data : (data.products || []);
-          if (items.length) { renderFallbackProducts(items); break; }
-        } catch(e) {}
+    function openModal(p){
+      mImg.src = p.image || ''; mImg.alt = p.name || '';
+      mTitle.textContent = p.name || 'Sản phẩm';
+      mDesc.textContent = p.desc || '';
+      mPrice.textContent = p.price || '';
+      mLink.href = p.link || '#';
+      modal.classList.add('show');
+    }
+    function closeModal(){ modal.classList.remove('show'); }
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+
+    grid.addEventListener('click', (e)=>{
+      const el = e.target.closest('[data-click="open"]');
+      if(!el) return;
+      const card = e.target.closest('.card');
+      const idx = [...grid.children].indexOf(card);
+      if(idx < 0) return;
+      openModal(items[idx]);
+    });
+
+    let items = [];
+    (async function loadProducts(){
+      for(const p of productPaths){
+        try{
+          const r = await fetch(p, {cache:'no-store'});
+          if(!r.ok) continue;
+          const raw = await r.json();
+          const list = Array.isArray(raw) ? raw : (Array.isArray(raw.data) ? raw.data : []);
+          if(!list.length) continue;
+          items = list.map(normalizeItem);
+          grid.innerHTML = items.map(cardHTML).join('');
+          break;
+        }catch(e){}
       }
-    }, 1000);
+    })();
   })();
+
+  // ===== Misc =====
+  $('year').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
