@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LIZD – NaMat</title>
+  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+  <link href="https://unpkg.com/@picocss/pico@2/css/pico.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --brand: #0ea5e9;
+      --brand-2: #0284c7;
+    }
+    body { background:#fff }
+    header {
+      background: linear-gradient(135deg, #d946ef, #f97316, #f59e0b);
+      color:#fff;
+      min-height: 52vh;
+      display:flex;
+      align-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+    header .wrap { width:min(1100px, 94%); margin-inline:auto; padding-block:3rem; text-align:center }
+    header .badge { display:inline-flex; align-items:center; gap:.5rem; background:#fff3; padding:.35rem .7rem; border-radius:999px; font-size:.9rem }
+    header h1 { font-weight:800; line-height:1.12; font-size: clamp(2rem, 4.5vw, 3rem); margin:.6rem 0 1rem }
+    header p.sub { opacity:.95; margin-bottom:1rem }
+    header .cta { background: var(--brand); border:none; color:#fff; padding:.65rem 1rem; border-radius:.6rem; }
+    header .cta:hover { background:var(--brand-2) }
+
+    .hero-image {
+      position:absolute; inset:0; opacity:.18; background-size:cover; background-position:center;
+      filter: saturate(1.05) contrast(1.02); z-index:0;
+      transition: background-image .2s ease;
+    }
+    header .wrap>* { position:relative; z-index:1 }
+
+    .section {
+      width:min(1100px, 94%); margin-inline:auto; padding-block:3rem;
+    }
+    .grid-4 {
+      display:grid;
+      grid-template-columns: repeat(4,minmax(0,1fr));
+      gap:16px;
+    }
+    @media (max-width: 1024px) { .grid-4 {grid-template-columns: repeat(3,minmax(0,1fr));} }
+    @media (max-width: 760px)  { .grid-4 {grid-template-columns: repeat(2,minmax(0,1fr));} }
+    @media (max-width: 520px)  { .grid-4 {grid-template-columns: 1fr;} }
+
+    .card {
+      border:1px solid #eee; border-radius:12px; overflow:hidden; background:#fff;
+      display:flex; flex-direction:column; position:relative;
+    }
+    .card .cover {
+      aspect-ratio: 4/3; background:#f6f7f8 center/cover no-repeat;
+      border-bottom:1px solid #f0f0f0;
+    }
+    .card .body { padding:14px; display:flex; flex-direction:column; gap:8px }
+    .price { color:#ef4444; font-weight:700 }
+    .list-price { color:#94a3b8; text-decoration:line-through; font-size:.95rem }
+    .btn { background:var(--brand); border:none; color:#fff; padding:.5rem .8rem; border-radius:8px; font-size:.9rem }
+    .btn:hover { background:var(--brand-2) }
+    .btn.secondary { background:#e2e8f0; color:#0f172a }
+    .btn.danger { background:#ef4444; color:#fff }
+
+    /* Nút Admin nổi */
+    .fab-admin { position:fixed; right:16px; bottom:16px; z-index:50 }
+    .modal { max-width:960px }
+    .helper { color:#64748b; font-size:.9rem }
+    .muted { color:#94a3b8 }
+    .input-row { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px }
+    @media (max-width: 760px){ .input-row { grid-template-columns: 1fr } }
+    .chips { display:flex; gap:8px; flex-wrap:wrap }
+    .chip { background:#f1f5f9; border:1px dashed #e2e8f0; padding:.25rem .5rem; border-radius:999px; font-size:.8rem }
+
+    /* Nút xoá trên từng card khi bật chế độ xoá */
+    .delete-badge {
+      display:none; position:absolute; top:8px; right:8px; padding:.25rem .5rem; border-radius:8px;
+      background:#ef4444; color:#fff; font-size:.75rem; cursor:pointer;
+    }
+    .delete-enabled .delete-badge { display:inline-block; }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header>
+  <div id="heroImage" class="hero-image"></div>
+  <div class="wrap">
+    <span class="badge">🔥 FLASH SALE</span>
+    <h1 id="heroTitle">NỔ ĐỘI GIÁ</h1>
+    <p id="heroSub" class="sub">Chăn Ga Gối Cao Cấp – Giảm Đến 50%</p>
+    <button class="cta" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      🛒 Xem sản phẩm
+    </button>
+  </div>
+</header>
+
+<!-- PRODUCTS -->
+<section id="products" class="section">
+  <h3>🧡 Sản phẩm nổi bật</h3>
+  <p id="loadNote" class="helper">Đang hiển thị dữ liệu gần nhất…</p>
+  <div id="productGrid" class="grid-4"></div>
+</section>
+
+<!-- FOOTER -->
+<footer class="section">
+  <div class="grid">
+    <div>
+      <h4>Liên hệ</h4>
+      <p class="muted">
+        📞 0949 090 033 · Zalo: 0949 090 033 <br>
+        Facebook: NaMat.lizd
+      </p>
+      <small class="muted">© 2025 LIZD – NaMat</small>
+    </div>
+  </div>
+</footer>
+
+<!-- Admin floating button -->
+<button class="btn fab-admin" data-target="adminModal">⚙️ Admin</button>
+
+<!-- ADMIN MODAL -->
+<dialog id="adminModal" class="modal">
+  <article>
+    <header>
+      <h3>Admin Panel</h3>
+      <a href="#" aria-label="Close" class="close" data-close></a>
+    </header>
+
+    <!-- Token -->
+    <label>Admin token
+      <input id="adminToken" placeholder="lizard-9999" />
+    </label>
+
+    <hr>
+
+    <!-- HERO -->
+    <h4>Hero</h4>
+    <div class="input-row">
+      <input id="heroTitleInput" placeholder="Tiêu đề lớn" />
+      <input id="heroSubInput" placeholder="Mô tả ngắn" />
+      <!-- Cho phép nhập URL thủ công -->
+      <input id="heroUrlInput" placeholder="URL ảnh bìa (để trống = dùng gradient)" />
+    </div>
+    <div class="input-row">
+      <!-- Upload ảnh bìa từ máy -->
+      <input type="file" id="heroFile" accept="image/*">
+      <button class="btn" id="btnHeroUpload">Upload ảnh bìa</button>
+      <div class="chips">
+        <button class="btn" id="btnHeroApply">Áp dụng ra trang</button>
+        <button class="btn secondary" id="btnHeroSaveLocal">Lưu tại trình duyệt</button>
+      </div>
+    </div>
+    <small class="helper">Ảnh hero khuyến nghị: <b>1920 × 600</b> (cắt trung tâm). Tối thiểu 1600 × 500.</small>
+
+    <hr>
+
+    <!-- ADD PRODUCT -->
+    <h4>Thêm sản phẩm mới</h4>
+    <div class="input-row">
+      <input id="pName" placeholder="Tên sản phẩm" />
+      <input id="pListPrice" type="number" placeholder="Giá niêm yết" />
+      <input id="pPrice" type="number" placeholder="Giá sau CK" />
+    </div>
+    <label>Mô tả
+      <textarea id="pDesc" rows="3" placeholder="Mô tả ngắn…"></textarea>
+    </label>
+    <div class="input-row">
+      <input type="file" id="pImages" multiple accept="image/*">
+      <button class="btn" id="btnUploadProdImgs">Upload ảnh SP</button>
+      <button class="btn secondary" id="btnClearUploaded">Xoá ảnh đã chọn</button>
+    </div>
+    <div id="uploadedChips" class="chips"></div>
+
+    <details>
+      <summary>🧹 Quản lý sản phẩm mẫu / dọn dẹp</summary>
+      <div class="grid">
+        <button class="btn danger" id="btnRemoveSamples">Xoá sản phẩm mẫu trên trang</button>
+        <button class="btn secondary" id="btnToggleDeleteMode">Bật/tắt chế độ xoá từng sản phẩm</button>
+        <small class="helper">Hệ thống sẽ cố gắng nhận diện thẻ sản phẩm mẫu theo <code>.sample</code>, <code>.is-sample</code> hoặc <code>[data-sample="1"]</code>. Bạn cũng có thể bật chế độ xoá để bấm xoá từng thẻ đang hiển thị.</small>
+      </div>
+    </details>
+
+    <footer class="grid">
+      <button class="btn secondary" data-close>Đóng</button>
+      <button class="btn" id="btnCreateProduct">Tạo sản phẩm</button>
+    </footer>
+  </article>
+</dialog>
+
+<script>
+  // ===== Helper: Local storage =====
+  const store = {
+    get(k, fallback=null){ try { return JSON.parse(localStorage.getItem(k)) ?? fallback } catch { return fallback } },
+    set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
+  };
+
+  // ===== Modal open/close =====
+  document.querySelectorAll('[data-target]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.getElementById(btn.dataset.target).showModal();
+    });
+  });
+  document.querySelectorAll('[data-close]').forEach(btn=>{
+    btn.addEventListener('click', (e)=> {
+      e.preventDefault();
+      btn.closest('dialog').close();
+    });
+  });
+
+  // ===== HERO logic (fix: cho phép nhập/preview ảnh bìa) =====
+  const heroImageEl = document.getElementById('heroImage');
+  const heroTitleEl = document.getElementById('heroTitle');
+  const heroSubEl   = document.getElementById('heroSub');
+
+  const heroTitleInput = document.getElementById('heroTitleInput');
+  const heroSubInput   = document.getElementById('heroSubInput');
+  const heroUrlInput   = document.getElementById('heroUrlInput');
+  const heroFileInput  = document.getElementById('heroFile');
+
+  function applyHero({title, sub, url}){
+    if(title) heroTitleEl.textContent = title;
+    if(sub) heroSubEl.textContent = sub;
+    if(url && url.trim() !== '') {
+      heroImageEl.style.backgroundImage = `url('${url}')`;
+      heroImageEl.style.opacity = 1;
+    } else {
+      heroImageEl.style.backgroundImage = '';
+      heroImageEl.style.opacity = .18;
+    }
+  }
+
+  // Load saved hero on start
+  const savedHero = store.get('heroSettings');
+  if(savedHero){ applyHero(savedHero); }
+
+  // Instant preview when a file is chosen
+  heroFileInput?.addEventListener('change', (e)=>{
+    const file = e.target.files?.[0];
+    if(!file) return;
+    const url = URL.createObjectURL(file);
+    heroImageEl.style.backgroundImage = `url('${url}')`;
+    heroImageEl.style.opacity = 1;
+  });
+
+  // Upload button -> convert to dataURL & put into input (no backend required)
+  document.getElementById('btnHeroUpload')?.addEventListener('click', async ()=>{
+    const file = heroFileInput.files?.[0];
+    if(!file){ alert('Chưa chọn file ảnh bìa'); return; }
+    const dataUrl = await fileToDataURL(file);
+    heroUrlInput.value = dataUrl;
+    applyHero({url: dataUrl});
+    alert('Ảnh bìa đã sẵn sàng (đã nhúng dạng Data URL).');
+  });
+
+  document.getElementById('btnHeroApply')?.addEventListener('click', ()=>{
+    applyHero({
+      title: heroTitleInput.value,
+      sub: heroSubInput.value,
+      url: heroUrlInput.value
+    });
+  });
+
+  document.getElementById('btnHeroSaveLocal')?.addEventListener('click', async ()=>{
+    const cfg = {
+      title: heroTitleInput.value || heroTitleEl.textContent,
+      sub:   heroSubInput.value   || heroSubEl.textContent,
+      url:   heroUrlInput.value   || (heroImageEl.style.backgroundImage?.slice(5, -2) || '')
+    };
+    try {
+      if (cfg.url && cfg.url.startsWith('data:') && cfg.url.length > 500000) {
+        // compress big data URLs before saving
+        cfg.url = await compressDataURL(cfg.url);
+      }
+      const payload = JSON.stringify(cfg);
+      if (payload.length > 4800000) {
+        alert('Ảnh bìa quá lớn để lưu trong trình duyệt. Hãy dùng nút Upload để lấy URL ảnh, rồi Lưu lại.');
+        return;
+      }
+      localStorage.setItem('heroSettings', payload);
+      alert('Đã lưu cấu hình hero vào trình duyệt.');
+    } catch(err){
+      console.error(err);
+      alert('Không thể lưu vì vượt giới hạn bộ nhớ của trình duyệt. Hãy dùng “Upload ảnh bìa” để có URL ngắn rồi lưu lại.');
+    }
+  });
+
+
+  // === Added: image compression to avoid localStorage quota ===
+  async function compressDataURL(dataUrl, maxW=1600, maxH=600, quality=0.82){
+    return new Promise((resolve, reject)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let {width:w, height:h} = img;
+        const ratio = Math.min(maxW / w, maxH / h, 1);
+        const cw = Math.round(w * ratio);
+        const ch = Math.round(h * ratio);
+        const canvas = document.createElement('canvas');
+        canvas.width = cw; canvas.height = ch;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, cw, ch);
+        // export jpeg to reduce size
+        const out = canvas.toDataURL('image/jpeg', quality);
+        resolve(out);
+      };
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
+  }
+
+  function fileToDataURL(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=> resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ===== PRODUCTS (chỉ thêm công cụ dọn dẹp/xoá) =====
+  const grid = document.getElementById('productGrid');
+
+  // (Tùy chọn) Khôi phục trạng thái "ẩn sản phẩm mẫu"
+  if (store.get('hideSampleProducts')) {
+    removeSampleCards();
+  }
+
+  // Toggle chế độ xoá từng thẻ
+  let deleteMode = false;
+  document.getElementById('btnToggleDeleteMode')?.addEventListener('click', ()=>{
+    deleteMode = !deleteMode;
+    grid.classList.toggle('delete-enabled', deleteMode);
+    if(deleteMode){
+      ensureDeleteBadges();
+    } else {
+      document.querySelectorAll('.delete-badge').forEach(el => el.remove());
+    }
+  });
+
+  // Nút xoá sản phẩm mẫu
+  document.getElementById('btnRemoveSamples')?.addEventListener('click', ()=>{
+    const count = removeSampleCards();
+    store.set('hideSampleProducts', true);
+    alert(`Đã xoá ${count} sản phẩm mẫu (nếu có).`);
+  });
+
+  // Tạo nút xoá trên từng card khi bật delete mode
+  function ensureDeleteBadges(){
+    grid.querySelectorAll('.card').forEach(card=>{
+      if(card.querySelector('.delete-badge')) return;
+      const badge = document.createElement('span');
+      badge.className = 'delete-badge';
+      badge.textContent = 'Xoá';
+      badge.addEventListener('click', ()=>{
+        card.remove();
+      });
+      card.appendChild(badge);
+    });
+  }
+
+  // Cố gắng tìm & xoá các thẻ sản phẩm mẫu phổ biến
+  function removeSampleCards(){
+    const selectors = ['.sample', '.is-sample', '[data-sample="1"]'];
+    let removed = 0;
+    selectors.forEach(sel => {
+      grid.querySelectorAll(sel).forEach(el => { el.remove(); removed++; });
+    });
+    return removed;
+  }
+</script>
+
+<!-- Script chính (nếu bạn có sẵn logic upload sản phẩm) -->
+<script>
+/* =========================
+   CẤU HÌNH ENDPOINT
+========================= */
+const API_PRODUCTS = '/api/products';
+const API_UPLOAD   = '/api/upload-image'; // POST base64 -> { url }
+const API_ADD      = '/api/add-product';  // POST product -> { ok: true }
+const API_DELETE   = '/api/delete-product'; // POST { id } -> { ok: true }
+
+/* =========================
+   TIỆN ÍCH
+========================= */
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+
+const fmt = (n) => (+n || 0).toLocaleString('vi-VN') + ' đ';
+const slug = (s) => (s||'').toString().toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+  .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+
+function fileToDataUrl(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// hiển thị toast đơn giản
+function toast(msg){ alert(msg); }
+
+/* =========================
+   HERO (local & upload)
+========================= */
+const hero = {
+  title: $('#heroTitle'),
+  sub:   $('#heroSub'),
+  image: $('#heroImage'),
+
+  inputTitle: $('#heroTitleInput'),
+  inputSub:   $('#heroSubInput'),
+  inputUrl:   $('#heroUrlInput'),
+  inputFile:  $('#heroFile'),
+  btnUpload:  $('#btnHeroUpload'),
+  btnApply:   $('#btnHeroApply'),
+  btnSaveLocal: $('#btnHeroSaveLocal'),
+
+  set(title, sub, url){
+    if(title) this.title.textContent = title;
+    if(sub)   this.sub.textContent   = sub;
+    if(url)   this.image.style.backgroundImage = `url("${url}")`;
+    else     this.image.style.backgroundImage = '';
+  },
+
+  getLocal(){
+    try { return JSON.parse(localStorage.getItem('hero-config')||'{}'); }
+    catch { return {}; }
+  },
+  saveLocal(obj){
+    localStorage.setItem('hero-config', JSON.stringify(obj||{}));
+    toast('Đã lưu hero vào trình duyệt.');
+  },
+  applyFromLocal(){
+    const cfg = this.getLocal();
+    this.set(cfg.title, cfg.sub, cfg.url);
+    if(cfg.title) this.inputTitle.value = cfg.title;
+    if(cfg.sub)   this.inputSub.value   = cfg.sub;
+    if(cfg.url)   this.inputUrl.value   = cfg.url;
+  }
+};
+
+// Áp dụng hero từ local khi mở trang
+hero.applyFromLocal();
+
+// Upload ảnh hero -> storage
+hero.btnUpload?.addEventListener('click', async ()=>{
+  try {
+    const adm = $('#adminToken')?.value?.trim() || '';
+    const f = hero.inputFile?.files?.[0];
+    const folder = 'hero';
+
+    if(!f) return toast('Chọn ảnh trước!');
+    const dataUrl = await fileToDataUrl(f);
+
+    const r = await fetch(API_UPLOAD, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'x-admin-token': adm },
+      body: JSON.stringify({ dataUrl, filename: f.name, folder })
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error||'Upload lỗi');
+    hero.inputUrl.value = j.url;
+    toast('Upload ảnh bìa thành công!');
+  } catch(e){ toast(`Upload lỗi: ${e.message}`); }
+});
+
+// Áp dụng hero ra trang
+hero.btnApply?.addEventListener('click', ()=>{
+  hero.set(hero.inputTitle?.value, hero.inputSub?.value, hero.inputUrl?.value);
+});
+
+// Lưu hero vào localStorage
+hero.btnSaveLocal?.addEventListener('click', ()=>{
+  hero.saveLocal({
+    title: hero.inputTitle?.value,
+    sub:   hero.inputSub?.value,
+    url:   hero.inputUrl?.value
+  });
+});
+
+/* =========================
+   NẠP SẢN PHẨM VÀ HIỂN THỊ
+========================= */
+async function loadProducts(){
+  try {
+    const r = await fetch(API_PRODUCTS);
+    const j = await r.json();
+
+    $('#loadNote').textContent = '';
+    renderProducts(j?.data||[]);
+  } catch (e){
+    $('#loadNote').textContent = 'Không tải được dữ liệu từ server, đang hiển thị dữ liệu gần nhất.';
+  }
+}
+
+function renderProducts(items){
+  const wrap = $('#productGrid');
+  wrap.innerHTML = '';
+  if(!items.length){
+    wrap.innerHTML = '<p class="muted">Chưa có sản phẩm.</p>';
+    return;
+  }
+
+  for(const it of items){
+    const pics = it.image_urls?.length ? it.image_urls : (it.image_url ? [it.image_url] : []);
+    const cover = pics[0] || '';
+    const pid = it.id ?? it._id ?? null; // cố gắng bắt id sản phẩm (tùy backend)
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    if(pid) card.dataset.id = pid;
+    card.innerHTML = `
+      <div class="cover" style="background-image:url('${cover}')"></div>
+      <div class="body">
+        <strong>${it.name||''}</strong>
+        <div class="muted">${it.desc||''}</div>
+        <div style="display:flex; align-items:center; gap:.5rem; margin-top:.25rem">
+          ${it.list_price ? `<span class="list-price">${fmt(it.list_price)}</span>` : ''}
+          <span class="price">${fmt(it.price || it.list_price)}</span>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:.5rem; flex-wrap:wrap">
+          <button class="btn secondary">Xem chi tiết</button>
+          <button class="btn">Đặt nhanh</button>
+          ${pid ? `<button class="btn danger" data-del="${pid}" title="Xoá sản phẩm này">Xoá</button>` : ''}
+        </div>
+      </div>
+    `;
+    wrap.appendChild(card);
+  }
+}
+
+// Lắng nghe nút xoá theo ID (event delegation)
+$('#productGrid')?.addEventListener('click', async (e)=>{
+  const btn = e.target.closest('[data-del]');
+  if(!btn) return;
+
+  const id = btn.getAttribute('data-del');
+  if(!id) return;
+  if(!confirm('Bạn có chắc muốn xoá sản phẩm này?')) return;
+
+  try{
+    const adm = $('#adminToken')?.value?.trim() || '';
+    const r = await fetch(API_DELETE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': adm },
+      body: JSON.stringify({ id })
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || 'Xoá sản phẩm lỗi');
+
+    // Xoá khỏi DOM ngay
+    btn.closest('.card')?.remove();
+    toast('Đã xoá sản phẩm.');
+    // (tuỳ chọn) nạp lại danh sách để đồng bộ
+    // await loadProducts();
+  }catch(e){
+    toast(`Lỗi xoá: ${e.message}`);
+  }
+});
+
+/* =========================
+   THÊM SẢN PHẨM (UPLOAD + CREATE)
+========================= */
+const uploaded = []; // các URL đã upload cho sản phẩm
+
+$('#btnUploadProdImgs')?.addEventListener('click', async ()=>{
+  try{
+    const adm = $('#adminToken')?.value?.trim() || '';
+    const files = $('#pImages')?.files;
+    if(!files?.length) return toast('Chọn ảnh trước!');
+
+    const folder = `products/${slug($('#pName')?.value||'san-pham')}`;
+    for(const f of files){
+      const dataUrl = await fileToDataUrl(f);
+      const r = await fetch(API_UPLOAD, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'x-admin-token': adm },
+        body: JSON.stringify({ dataUrl, filename: f.name, folder })
+      });
+      const j = await r.json();
+      if(!r.ok) throw new Error(j.error||'Upload ảnh lỗi');
+
+      uploaded.push(j.url);
+      addChip(j.url);
+    }
+
+    toast('Đã upload ảnh sản phẩm xong.');
+  }catch(e){ toast(`Upload ảnh lỗi: ${e.message}`); }
+});
+
+$('#btnClearUploaded')?.addEventListener('click', ()=>{
+  uploaded.length = 0;
+  $('#uploadedChips').innerHTML = '';
+});
+
+function addChip(url){
+  const c = document.createElement('span');
+  c.className = 'chip';
+  c.textContent = url.split('/').pop();
+  $('#uploadedChips').appendChild(c);
+}
+
+$('#btnCreateProduct')?.addEventListener('click', async ()=>{
+  try{
+    const adm = $('#adminToken')?.value?.trim() || '';
+    const name = $('#pName')?.value?.trim();
+    const list_price = +($('#pListPrice')?.value) || 0;
+    const price = +($('#pPrice')?.value) || 0;
+    const desc = $('#pDesc')?.value?.trim();
+
+    if(!name) return toast('Nhập tên sản phẩm!');
+    if(!uploaded.length) return toast('Bạn chưa upload ảnh sản phẩm!');
+
+    const body = { name, list_price, price, desc, image_urls: uploaded, active: true };
+
+    const r = await fetch(API_ADD, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'x-admin-token': adm },
+      body: JSON.stringify(body)
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error||'Tạo sản phẩm lỗi');
+
+    toast('Đã tạo sản phẩm thành công!');
+    // reset form nhẹ
+    $('#pName').value = '';
+    $('#pListPrice').value = '';
+    $('#pPrice').value = '';
+    $('#pDesc').value = '';
+    $('#pImages').value = '';
+    $('#uploadedChips').innerHTML = '';
+    uploaded.length = 0;
+
+    // nạp lại danh sách
+    loadProducts();
+  }catch(e){ toast(`Lỗi: ${e.message}`); }
+});
+
+/* =========================
+   KHỞI TẠO
+========================= */
+loadProducts();
+
+</script>
+</body>
+</html>

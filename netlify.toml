@@ -1,0 +1,42 @@
+[build]
+  publish   = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Products (đang có file products.js)
+[[redirects]]
+  from = "/api/products"
+  to   = "/.netlify/functions/products"
+  status = 200
+
+# Settings (nếu có, giữ nguyên; nếu chưa có function settings thì có thể bỏ)
+# [[redirects]]
+#   from = "/api/settings"
+#   to   = "/.netlify/functions/settings"
+#   status = 200
+
+# Order: file của bạn tên sendOrder.js -> redirect đúng tên
+[[redirects]]
+  from = "/api/order"
+  to   = "/.netlify/functions/sendOrder"
+  status = 200
+
+# Upload image
+[[redirects]]
+  from = "/api/upload-image"
+  to   = "/.netlify/functions/upload-image"
+  status = 200
+
+# Add product
+[[redirects]]
+  from = "/api/add-product"
+  to   = "/.netlify/functions/add-product"
+  status = 200
+# Delete product
+[[redirects]]
+  from = "/api/delete-product"
+  to   = "/.netlify/functions/delete-product"
+  status = 200
+
