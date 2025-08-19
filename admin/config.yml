@@ -1,0 +1,18 @@
+backend:
+  name: git-gateway
+  branch: main   # nhánh chính trên GitHub
+
+media_folder: "images/uploads"   # nơi lưu ảnh trong repo
+public_folder: "/images/uploads" # đường dẫn public
+
+collections:
+  - name: "hero"
+    label: "Hero Section"
+    files:
+      - file: "site_data/hero.yml"
+        label: "Hero Content"
+        name: "hero"
+        fields:
+          - { label: "Tiêu đề", name: "title", widget: "string" }
+          - { label: "Mô tả", name: "description", widget: "text" }
+          - { label: "Ảnh bìa", name: "image", widget: "image" }
