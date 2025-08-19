@@ -1,114 +1,161 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NaMat LIZD - Landing Page</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NaMat LIZD</title>
 
+  <!-- Base reset & fonts (nhẹ) -->
   <style>
-    /* Style Hero */
-    .hero {
-      text-align: center;
-      padding: 100px 20px;
-      background-size: cover;
-      background-position: center;
-      color: white;
-    }
-    .hero .btn {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #ff4b2b;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-    /* Style Footer */
-    .footer {
-      text-align: center;
-      padding: 20px;
-      background: #f4f4f4;
-      margin-top: 50px;
-    }
-    /* Admin Button */
-    #admin-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #333;
-      color: #fff;
-      padding: 10px 15px;
-      border-radius: 5px;
-      text-decoration: none;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-    #admin-btn:hover {
-      opacity: 1;
-      background: #ff4b2b;
-    }
+    :root{--brand:#7856EA;--text:#1F2937;--muted:#6B7280;--bg:#F8FAFC}
+    *{box-sizing:border-box}html,body{margin:0;padding:0}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#fff;color:var(--text)}
+    .nm-container{max-width:1200px;margin:0 auto;padding:0 16px}
+    /* HERO */
+    .nm-hero{position:relative;border-radius:24px;overflow:hidden;margin:20px auto;background:linear-gradient(180deg,rgba(120,86,234,.12),rgba(120,86,234,0))}
+    .nm-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+    .nm-hero::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.38)}
+    .nm-hero-inner{position:relative;z-index:1;padding:56px 20px;color:#0B1020}
+    .nm-hero-kicker{display:inline-block;background:#fff;color:#7856EA;border:1px solid rgba(0,0,0,.06);border-radius:999px;padding:8px 12px;font-weight:600;font-size:12px;letter-spacing:.04em}
+    .nm-hero h1{font-size:clamp(28px,4vw,44px);line-height:1.15;margin:14px 0 10px}
+    .nm-hero p{max-width:720px;color:var(--text);font-size:clamp(14px,2.2vw,18px)}
+    .nm-hero-cta{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
+    .nm-btn{border:0;border-radius:14px;padding:12px 18px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .nm-btn-primary{background:#7856EA;color:#fff}
+    .nm-btn-ghost{background:#fff;color:#7856EA;border:1px solid rgba(120,86,234,.25)}
+    /* FOOTER */
+    .nm-footer{background:var(--bg);border-top:1px solid #E5E7EB;margin-top:48px}
+    .nm-footer-grid{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:24px;padding:32px 0}
+    .nm-ft-title{font-weight:700;margin-bottom:10px;color:#111827}
+    .nm-ft-text{color:var(--muted);font-size:14px;line-height:1.6}
+    .nm-ft-links a{display:block;color:var(--text);text-decoration:none;font-size:14px;margin:8px 0}
+    .nm-ft-links a:hover{color:#7856EA}
+    .nm-copy{border-top:1px solid #E5E7EB;padding:14px 0;color:#6B7280;font-size:13px}
+    @media(max-width:900px){.nm-footer-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:640px){.nm-footer-grid{grid-template-columns:1fr}.nm-hero-inner{padding:44px 16px}}
+    /* ADMIN BUTTON */
+    #nm-admin-btn{position:fixed;right:18px;bottom:18px;background:#111827;color:#fff;border-radius:10px;padding:10px 14px;font-size:13px;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:.85;z-index:9999}
+    #nm-admin-btn:hover{opacity:1;background:#7856EA}
   </style>
 </head>
 <body>
-  <!-- Hero Section -->
-  <section id="hero" class="hero">
-    <!-- Nội dung Hero load từ content.json -->
-  </section>
 
-  <!-- Nội dung chính -->
-  <main>
-    <section class="products">
-      <h2>Sản phẩm nổi bật</h2>
-      <div id="product-list"></div>
-    </section>
+  <!-- MOUNT HERO (sẽ được JS render) -->
+  <div class="nm-container" id="nm-hero-mount"></div>
+
+  <!-- NỘI DUNG HIỆN CÓ (nếu bạn có phần grid sản phẩm, có thể đặt vào đây) -->
+  <main class="nm-container" id="page-content">
+    <!-- Ví dụ: tiêu đề list sản phẩm -->
+    <h2 style="margin:24px 0 12px">SẢN PHẨM THÁNG 8</h2>
+    <!-- Nếu bạn đã có script dựng grid, nó có thể gắn vào trong #page-content -->
   </main>
 
-  <!-- Footer -->
-  <footer id="footer" class="footer">
-    <!-- Nội dung Footer load từ content.json -->
-  </footer>
+  <!-- FOOTER (sẽ được JS render) -->
+  <div id="nm-footer-mount"></div>
 
-  <!-- Nút Admin -->
-  <a id="admin-btn" href="/admin">⚙ Admin</a>
+  <!-- NÚT ADMIN -->
+  <a id="nm-admin-btn" href="/admin" title="Mở bảng điều khiển">⚙ Admin</a>
 
-  <!-- Script fetch JSON -->
+  <!-- INJECT HERO + FOOTER + LOAD JSON -->
   <script>
-    fetch('site_data/content.json')
-      .then(response => response.json())
-      .then(data => {
-        // Render Hero
-        if (data.hero) {
-          document.getElementById('hero').style.backgroundImage = `url(${data.hero.background})`;
-          document.getElementById('hero').innerHTML = `
-            <div class="hero-content">
-              <h1>${data.hero.title}</h1>
-              <p>${data.hero.subtitle}</p>
-              <a href="${data.hero.ctaLink}" class="btn">${data.hero.ctaText}</a>
-            </div>
-          `;
-        }
+  (function(){
+    // HERO
+    const heroMount = document.getElementById('nm-hero-mount');
+    heroMount.innerHTML = `
+      <section class="nm-hero" aria-label="Hero">
+        <div class="nm-hero-bg" id="heroBg"></div>
+        <div class="nm-hero-inner">
+          <span class="nm-hero-kicker" id="heroKicker">SẢN PHẨM THÁNG 8</span>
+          <h1 id="heroTitle">Chân ái giấc ngủ cho cả nhà • Giảm đến 40%</h1>
+          <p id="heroDesc">Chăn lạnh Premium, Cool Fiber set, gối trẻ em cao cấp… Hàng chính hãng NaMat – an toàn, bền đẹp, êm ái.</p>
+          <div class="nm-hero-cta">
+            <a class="nm-btn nm-btn-primary" id="cta1" href="#products">Xem sản phẩm</a>
+            <a class="nm-btn nm-btn-ghost" id="cta2" href="/chinh-sach">Xem chính sách</a>
+          </div>
+        </div>
+      </section>`;
 
-        // Render Footer
-        if (data.footer) {
-          document.getElementById('footer').innerHTML = `
-            <p>${data.footer.text}</p>
-          `;
-        }
+    // FOOTER
+    const footerMount = document.getElementById('nm-footer-mount');
+    const footer = document.createElement('footer');
+    footer.className = 'nm-footer';
+    footer.innerHTML = `
+      <div class="nm-container nm-footer-grid">
+        <div>
+          <div class="nm-ft-title">NaMat LIZD</div>
+          <p class="nm-ft-text">Thương hiệu chăn ga gối nệm chính hãng – êm ái, thoáng mát, bền đẹp.</p>
+        </div>
+        <div>
+          <div class="nm-ft-title">Chính sách</div>
+          <div class="nm-ft-links">
+            <a href="/chinh-sach/doi-tra">Đổi trả 7 ngày</a>
+            <a href="/chinh-sach/bao-hanh">Bảo hành 12 tháng</a>
+            <a href="/chinh-sach/van-chuyen">Vận chuyển</a>
+          </div>
+        </div>
+        <div>
+          <div class="nm-ft-title">Liên hệ</div>
+          <p class="nm-ft-text">Hotline: 09x xxx xxxx<br>Email: support@namat.vn</p>
+        </div>
+        <div>
+          <div class="nm-ft-title">Nhận ưu đãi</div>
+          <form name="newsletter" method="POST" data-netlify="true">
+            <input type="hidden" name="form-name" value="newsletter">
+            <input name="email" type="email" placeholder="Nhập email của bạn" required
+                   style="border:1px solid #E5E7EB;border-radius:12px;padding:10px 12px;margin-right:8px">
+            <button type="submit" class="nm-btn nm-btn-primary" style="border-radius:12px">Đăng ký</button>
+          </form>
+        </div>
+      </div>
+      <div class="nm-container nm-copy">© <span id="nm-year"></span> NaMat. All rights reserved.</div>`;
+    footerMount.appendChild(footer);
+    document.getElementById('nm-year').textContent = new Date().getFullYear();
 
-        // Render sản phẩm
-        if (data.products) {
-          const productList = document.getElementById('product-list');
-          productList.innerHTML = data.products.map(p => `
-            <div class="product">
-              <img src="${p.image}" alt="${p.name}">
-              <h3>${p.name}</h3>
-              <p>${p.description}</p>
-            </div>
-          `).join('');
-        }
-      })
-      .catch(err => console.error("Error loading content.json", err));
+    // LOAD HERO DATA từ nhiều path để tương thích
+    const tryPaths = ['data/hero.json','/data/hero.json','site_data/content.json','/site_data/content.json'];
+    (async () => {
+      for (const p of tryPaths) {
+        try {
+          const res = await fetch(p, { cache: 'no-store' });
+          if (!res.ok) continue;
+          const cfg = await res.json();
+
+          const $ = id => document.getElementById(id);
+          // Chuẩn hóa key cho 2 dạng file (hero.json & content.json)
+          const hero = cfg.hero ? {
+            kicker: cfg.hero.kicker || cfg.kicker,
+            title : cfg.hero.title  || cfg.title,
+            desc  : cfg.hero.subtitle || cfg.hero.desc || cfg.desc,
+            bg    : cfg.hero.background || cfg.hero.bg || cfg.bg,
+            cta1  : { text: cfg.hero.ctaText || cfg?.cta1?.text, href: cfg.hero.ctaLink || cfg?.cta1?.href },
+            cta2  : cfg.hero.cta2 || cfg.cta2
+          } : {
+            kicker: cfg.kicker,
+            title : cfg.title,
+            desc  : cfg.desc,
+            bg    : cfg.bg,
+            cta1  : cfg.cta1,
+            cta2  : cfg.cta2
+          };
+
+          if (hero.bg)    $('heroBg').style.backgroundImage = `url('${hero.bg}')`;
+          if (hero.kicker) $('heroKicker').textContent = hero.kicker;
+          if (hero.title)  $('heroTitle').textContent  = hero.title;
+          if (hero.desc)   $('heroDesc').textContent   = hero.desc;
+          if (hero.cta1){
+            if (hero.cta1.text) $('cta1').textContent = hero.cta1.text;
+            if (hero.cta1.href) $('cta1').href        = hero.cta1.href;
+          }
+          if (hero.cta2){
+            const c2 = document.getElementById('cta2');
+            if (hero.cta2.text) c2.textContent = hero.cta2.text;
+            if (hero.cta2.href) c2.href        = hero.cta2.href;
+          }
+          break; // đã load được thì dừng
+        } catch(e) { /* thử path khác */ }
+      }
+    })();
+  })();
   </script>
 </body>
 </html>
