@@ -44,7 +44,42 @@
     .pm-order{background:#f8fafc;border:1px solid #e2e8f0;padding:12px;border-radius:12px;margin-top:12px}
     .pm-order .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     @media (max-width:760px){.pm-order .row{grid-template-columns:1fr}}
-  </style>
+  
+/* Admin hero */
+.admin-fab{position:fixed;right:16px;bottom:16px;z-index:9999;background:#0ea5e9;color:#fff;border:none;padding:.8rem 1rem;border-radius:999px;box-shadow:0 10px 25px rgba(2,6,23,.2);cursor:pointer}
+.admin-panel{position:fixed;right:16px;bottom:68px;width:min(460px,92vw);background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 20px 40px rgba(2,6,23,.2);padding:14px;display:none;z-index:9999}
+.admin-panel h4{margin:0 0 8px}.admin-panel .row{display:grid;grid-template-columns:1fr;gap:8px}
+.admin-panel input,.admin-panel textarea{width:100%;padding:.6rem .7rem;border:1px solid #e2e8f0;border-radius:8px}
+.admin-panel .actions{display:flex;gap:8px;margin-top:8px;justify-content:space-between;align-items:center}
+.admin-panel .hint{color:#64748b;font-size:.85rem}
+
+</style>
+
+<script>
+  // tiny YAML parser for key: value (no arrays)
+  function parseYAML(src){
+    try{
+      const lines = src.replace(/\r/g,'').split('\n');
+      const root = {}; const stack=[{indent:-1,obj:root}];
+      for (let raw of lines){
+        if (!raw.trim() || raw.trim().startsWith('#')) continue;
+        const indent = raw.match(/^\s*/)[0].length;
+        const m = raw.match(/^\s*([^:#]+):\s*(.*)$/); if(!m) continue;
+        let key=m[1].trim(), val=m[2].trim();
+        while (stack.length && indent <= stack[stack.length-1].indent) stack.pop();
+        const parent = stack[stack.length-1].obj;
+        if (val===''){ parent[key]={}; stack.push({indent,obj:parent[key]}); }
+        else{
+          if ((val.startsWith('"')&&val.endsWith('"'))||(val.startsWith("'")&&val.endsWith("'"))) val=val.slice(1,-1);
+          if (/^[{\[].*[}\]]$/.test(val)){ try{ val=JSON.parse(val);}catch(e){} }
+          parent[key]=val;
+        }
+      }
+      return root;
+    }catch(e){ console.error('YAML parse error',e); return {}; }
+  }
+</script>
+
 </head>
 <body>
   <header class="hero">
@@ -301,5 +336,103 @@
     })();
 
   </script>
+
+<button id="adminFab" class="admin-fab" style="display:none">⚙️ Admin</button>
+<div id="adminPanel" class="admin-panel">
+  <h4>Chỉnh hero (công khai qua hero.json / site_data/hero)</h4>
+  <div class="row">
+    <input id="admTitle" placeholder="Tiêu đề (H1)" />
+    <input id="admSubtitle" placeholder="Phụ đề" />
+    <input id="admCta1" placeholder="Nút 1 — nhãn" />
+    <input id="admCta1Href" placeholder="Nút 1 — link (#sanpham)" />
+    <input id="admCta2" placeholder="Nút 2 — nhãn" />
+    <input id="admCta2Href" placeholder="Nút 2 — link (Shopee)" />
+    <input id="admBgImage" placeholder="Link ảnh nền hero (tuỳ chọn)" />
+    <textarea id="admGradient" placeholder="CSS gradient, ví dụ: linear-gradient(135deg,#ff7a00,#ffb703)"></textarea>
+  </div>
+  <div class="actions">
+    <span class="hint">Bấm “Xuất hero.json”, commit file lên GitHub để tất cả khách đều thấy.</span>
+    <div>
+      <button id="admExport" class="btn secondary">Xuất hero.json</button>
+      <button id="admSaveLocal" class="btn">Lưu local</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  const $ = s=>document.querySelector(s);
+  const hero = document.querySelector('header.hero');
+  const titleEl = hero?.querySelector('h1');
+  const subtitleEl = hero?.querySelector('.subtitle');
+  const ctas = hero?.querySelectorAll('.hero-actions .btn');
+
+  function applyHero(cfg){
+    if (!cfg) return;
+    if (cfg.title) titleEl.textContent = cfg.title;
+    if (cfg.subtitle) subtitleEl.textContent = cfg.subtitle;
+    if (ctas && ctas[0]){ if (cfg.cta1) ctas[0].textContent=cfg.cta1; if (cfg.cta1href) ctas[0].setAttribute('href', cfg.cta1href); }
+    if (ctas && ctas[1]){ if (cfg.cta2) ctas[1].textContent=cfg.cta2; if (cfg.cta2href) ctas[1].setAttribute('href', cfg.cta2href); }
+    if (cfg.bgImage){
+      hero.style.backgroundImage = 'url(' + cfg.bgImage + '), ' + (cfg.gradient || 'linear-gradient(135deg,#ff7a00,#ffb703)');
+      hero.style.backgroundSize='cover'; hero.style.backgroundBlendMode='overlay';
+    } else if (cfg.gradient){ hero.style.background = cfg.gradient; }
+  }
+
+  async function loadHero(){
+    // 1) hero.json
+    try{
+      const r = await fetch('hero.json',{cache:'no-store'});
+      if (r.ok){ const cfg = await r.json(); applyHero(cfg); localStorage.setItem('hero_settings', JSON.stringify(cfg)); return; }
+    }catch(e){}
+    // 2) site_data/hero (yaml or json)
+    try{
+      const r2 = await fetch('site_data/hero',{cache:'no-store'});
+      if (r2.ok){
+        const txt = await r2.text();
+        let cfg;
+        try{ cfg = JSON.parse(txt); }catch(e){ cfg = parseYAML(txt); }
+        applyHero(cfg); localStorage.setItem('hero_settings', JSON.stringify(cfg)); return;
+      }
+    }catch(e){}
+    // 3) local
+    try{ const cfg = JSON.parse(localStorage.getItem('hero_settings')||'{}'); applyHero(cfg);}catch(e){}
+  }
+  loadHero();
+
+  // Admin toggle
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('admin')==='1'){
+    const fab = $('#adminFab'), panel = $('#adminPanel');
+    fab.style.display='inline-flex';
+    fab.addEventListener('click', ()=> panel.style.display = panel.style.display==='block'?'none':'block' );
+    function formCfg(){ return {
+      title: $('#admTitle').value.trim(),
+      subtitle: $('#admSubtitle').value.trim(),
+      cta1: $('#admCta1').value.trim(),
+      cta1href: $('#admCta1Href').value.trim(),
+      cta2: $('#admCta2').value.trim(),
+      cta2href: $('#admCta2Href').value.trim(),
+      bgImage: $('#admBgImage').value.trim(),
+      gradient: $('#admGradient').value.trim()
+    };}
+    function fill(cfg){ if(!cfg) return;
+      $('#admTitle').value = cfg.title||'';
+      $('#admSubtitle').value = cfg.subtitle||'';
+      $('#admCta1').value = cfg.cta1||'';
+      $('#admCta1Href').value = cfg.cta1href||'';
+      $('#admCta2').value = cfg.cta2||'';
+      $('#admCta2Href').value = cfg.cta2href||'';
+      $('#admBgImage').value = cfg.bgImage||'';
+      $('#admGradient').value = cfg.gradient||'';
+    }
+    try{ fill(JSON.parse(localStorage.getItem('hero_settings')||'{}')); }catch(e){}
+    $('#admSaveLocal').addEventListener('click', ()=>{ const cfg=formCfg(); localStorage.setItem('hero_settings', JSON.stringify(cfg)); applyHero(cfg); alert('Đã lưu local. Để public, hãy export hero.json và commit lên GitHub.'); });
+    $('#admExport').addEventListener('click', ()=>{ const cfg=formCfg(); const blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='hero.json'; a.click(); URL.revokeObjectURL(url); });
+  }
+})();
+</script>
+
 </body>
 </html>
