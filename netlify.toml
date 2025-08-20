@@ -39,4 +39,8 @@
   from = "/api/delete-product"
   to   = "/.netlify/functions/delete-product"
   status = 200
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 200
 
