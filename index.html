@@ -127,6 +127,34 @@
     }catch(e){ console.error('YAML parse error', e); return {}; }
   }
 </script>
+
+<script>
+  function __loadProductsWithFallback(){
+    try{
+      const json = atob(PRODUCTS_B64);
+      const arr = JSON.parse(json);
+      if (Array.isArray(arr) && arr.length){
+        console.log('[Products] Loaded from embedded Base64:', arr.length);
+        return Promise.resolve(arr);
+      }
+      console.warn('[Products] Embedded empty, try fetch products_grouped.json');
+    }catch(e){
+      console.error('[Products] Base64 decode failed:', e);
+    }
+    return fetch('products_grouped.json', {cache:'no-store'})
+      .then(r => r.ok ? r.json() : [])
+      .then(arr => {
+        if (Array.isArray(arr) && arr.length){
+          console.log('[Products] Loaded from products_grouped.json:', arr.length);
+          return arr;
+        }
+        console.warn('[Products] products_grouped.json missing or empty.');
+        return [];
+      })
+      .catch(e => { console.error('[Products] fetch fallback failed:', e); return []; });
+  }
+</script>
+
 </head>
 <body>
   <header class="hero">
@@ -361,13 +389,13 @@
       window.open(url, '_blank', 'noopener');
     });
 
-    try{
-      const parsed = loadProducts();
+    __loadProductsWithFallback().then(parsed => {
+      if (!Array.isArray(parsed) || !parsed.length){
+        document.getElementById('loadNote').textContent = 'Không tìm thấy dữ liệu sản phẩm. Kiểm tra lại file index hoặc thêm products_grouped.json vào root.';
+        return;
+      }
       renderProducts(parsed);
-    }catch(e){
-      console.error('Failed to decode embedded products', e);
-      document.getElementById('loadNote').textContent = 'Không đọc được dữ liệu sản phẩm.';
-    }
+    });
   </script>
 
 <button id="adminFab" class="admin-fab" style="display:none">⚙️ Admin</button>
