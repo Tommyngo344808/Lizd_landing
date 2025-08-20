@@ -146,26 +146,41 @@
     </article>
   </dialog>
 
-  <script>
-    // Utilities
-    const vnd = n => (n||0) ? (n).toLocaleString('vi-VN') + ' đ' : '';
-    const $ = sel => document.querySelector(sel);
-    const grid = document.getElementById('productGrid');
+ <script>
+// Utilities
+const vnd = (n) => {
+  const num = Number(n);
+  return (Number.isFinite(num) && num > 0)
+    ? num.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+    : '';
+};
+const $ = sel => document.querySelector(sel);
+const grid = document.getElementById('productGrid');
 
-    function cardTemplate(p, idx){
-      const img = (p.image_urls && p.image_urls[0]) || p.image_url || '';
-      const range = (p.price_min && p.price_max && p.price_max !== p.price_min) ? (vnd(p.price_min) + ' – ' + vnd(p.price_max)) : '';
-      return `
-        <div class="card" data-idx="${idx}">
-          <div class="cover" style="background-image:url('${img}')"></div>
-          <div class="body">
-            <div class="title"><a href="javascript:void(0)" class="open-detail">${p.name || ''}</a></div>
-            <div class="desc">${(p.desc||'').replace(/</g,'&lt;')}</div>
-            <div class="price">${vnd(p.price || p.price_min || 0)} <span class="listp">${p.list_price? vnd(p.list_price):''}</span> <span>${range}</span></div>
-            <div style="margin-top:10px"><button class="btn open-detail">Xem chi tiết</button></div>
-          </div>
-        </div>`;
-    }
+function cardTemplate(p, idx){
+  const img = (p.image_urls && p.image_urls[0]) || p.image_url || '';
+
+  // chỉ hiện 1 giá hoặc khoảng giá
+  const hasRange  = (p.price_min && p.price_max && p.price_max !== p.price_min);
+  const priceText = hasRange
+    ? `${vnd(p.price_min)} – ${vnd(p.price_max)}`
+    : vnd(p.price || p.price_min || 0);
+
+  return `
+    <div class="card" data-idx="${idx}">
+      <div class="cover" style="background-image:url('${img}')"></div>
+      <div class="body">
+        <div class="title"><a href="javascript:void(0)" class="open-detail">${p.name || ''}</a></div>
+        <div class="desc">${(p.desc || '').replace(/</g,'&lt;')}</div>
+        <div class="price">
+          ${priceText}
+          <span class="listp">${p.list_price ? vnd(p.list_price) : ''}</span>
+        </div>
+        <div style="margin-top:10px"><button class="btn open-detail">Xem chi tiết</button></div>
+      </div>
+    </div>`;
+}
+</script>
 
     function renderProducts(data){
       if (!Array.isArray(data)) return;
