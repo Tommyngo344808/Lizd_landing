@@ -19,10 +19,33 @@
   const grid = document.getElementById('productGrid');
 
   const money = v => (v && v>0) ? new Intl.NumberFormat('vi-VN').format(v)+'đ' : '';
+  const MAX_REASONABLE = 50000000; // 50 triệu: quá mức này coi như dữ liệu lỗi (điện thoại, chuỗi lạ...)
+
+  function toNumber(v){
+    if (typeof v === 'number' && isFinite(v)) return v;
+    if (typeof v === 'string'){
+      // chỉ lấy chữ số
+      const n = Number(v.replace(/[^\d]/g,''));
+      return isFinite(n) ? n : 0;
+    }
+    return 0;
+  }
+
   function derivePrices(p){
-    const sale = (p.price ?? p.price_min ?? p.base_price ?? 0) * 1;
-    const orig = (p.original_price ?? p.list_price ?? p.msrp ?? p.compare_at ?? 0) * 1;
-    const hasRange = (p.price_min && p.price_max && p.price_min !== p.price_max);
+    let sale = toNumber(p.price ?? p.price_min ?? p.base_price ?? 0);
+    let orig = toNumber(p.original_price ?? p.list_price ?? p.msrp ?? p.compare_at ?? 0);
+
+    // khoảng giá
+    const minN = toNumber(p.price_min);
+    const maxN = toNumber(p.price_max);
+    const hasRange = (minN && maxN && minN !== maxN);
+
+    // loại giá bất thường (số điện thoại…)
+    if (sale > MAX_REASONABLE) sale = 0;
+    if (orig > MAX_REASONABLE) orig = 0;
+
+    if (orig && sale && orig <= sale) orig = 0; // nếu giá gốc <= giá sale thì bỏ
+
     const pct = (orig>0 && sale>0 && orig>sale) ? Math.round((orig - sale)/orig*100) : 0;
     return {sale, orig, hasRange, pct};
   }
@@ -30,7 +53,8 @@
   function priceHtml(p){
     const {sale, orig, hasRange, pct} = derivePrices(p);
     if(hasRange){
-      return `<div class="price-main">${money(p.price_min)} – ${money(p.price_max)}</div>`;
+      const minN = toNumber(p.price_min), maxN = toNumber(p.price_max);
+      return `<div class="price-main">${money(minN)} – ${money(maxN)}</div>`;
     }
     if(!sale){ return `<div class="price-row"><span class="price-main">Liên hệ</span></div>`; }
     const old = (orig>sale) ? `<span class="price-old">${money(orig)}</span>` : '';
@@ -74,13 +98,22 @@
   const mBuy = document.getElementById('mBuy');
   const mClose = document.getElementById('mClose');
 
+  function cleanDesc(s){
+    if (!s) return '';
+    const bad = ['trang bạn yêu cầu không tồn tại'];
+    const low = s.toLowerCase();
+    for (const b of bad){ if (low.includes(b)) return ''; }
+    return s;
+  }
+
   function openModal(p){
     const {sale, orig, hasRange, pct} = derivePrices(p);
     mImg.src = p.image_url || p.image || '';
     mName.textContent = p.name || '';
-    mDesc.textContent = p.desc || '';
+    mDesc.textContent = cleanDesc(p.desc || '');
     if(hasRange){
-      mPrice.textContent = money(p.price_min) + ' – ' + money(p.price_max);
+      const minN = toNumber(p.price_min), maxN = toNumber(p.price_max);
+      mPrice.textContent = money(minN) + ' – ' + money(maxN);
       mOld.textContent=''; mOff.style.display='none';
     } else {
       mPrice.textContent = sale ? money(sale) : 'Liên hệ';
