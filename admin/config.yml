@@ -1,18 +1,34 @@
 backend:
   name: git-gateway
-  branch: main   # nhánh chính trên GitHub
+  branch: main        # ← đúng nhánh Netlify đang deploy
 
-media_folder: "images/uploads"   # nơi lưu ảnh trong repo
-public_folder: "/images/uploads" # đường dẫn public
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+# nếu muốn phải "Publish" mới live, bật dòng dưới
+# publish_mode: editorial_workflow
 
 collections:
-  - name: "hero"
-    label: "Hero Section"
+  - name: "settings"
+    label: "Cấu hình trang"
     files:
-      - file: "site_data/hero.yml"
-        label: "Hero Content"
+      - file: "data/hero.json"
+        label: "Hero Section"
         name: "hero"
         fields:
+          - { label: "Kicker", name: "kicker", widget: "string" }
           - { label: "Tiêu đề", name: "title", widget: "string" }
-          - { label: "Mô tả", name: "description", widget: "text" }
-          - { label: "Ảnh bìa", name: "image", widget: "image" }
+          - { label: "Mô tả", name: "desc", widget: "text" }
+          - label: "CTA 1"
+            name: "cta1"
+            widget: "object"
+            fields:
+              - { label: "Nhãn", name: "text", widget: "string" }
+              - { label: "Link",  name: "href", widget: "string" }
+          - label: "CTA 2"
+            name: "cta2"
+            widget: "object"
+            fields:
+              - { label: "Nhãn", name: "text", widget: "string" }
+              - { label: "Link",  name: "href", widget: "string" }
+          - { label: "Ảnh nền", name: "bg", widget: "image", allow_multiple: false }
